@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -43,7 +44,16 @@ namespace MyOrderConsumer
         ConnectionFactory factory { get; set; }
         IConnection connection { get; set; }
         IModel channel { get; set; }
+        private readonly ILogger _logger;
 
+        public RabbitListener(ILogger<RabbitListener> logger)
+        {
+            this.factory = new ConnectionFactory() { HostName = "localhost" };
+            this.connection = factory.CreateConnection();
+            this.channel = connection.CreateModel();
+            _logger = logger;
+
+        }
         public void Register()
         {
             channel.QueueDeclare(queue: "orders", durable: false, exclusive: false, autoDelete: false, arguments: null);
@@ -54,6 +64,9 @@ namespace MyOrderConsumer
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 int m = 0;
+
+                _logger.LogInformation(message);
+
             };
             channel.BasicConsume(queue: "orders", autoAck: false, consumer: consumer);
         }
@@ -63,14 +76,7 @@ namespace MyOrderConsumer
             this.connection.Close();
         }
 
-        public RabbitListener()
-        {
-            this.factory = new ConnectionFactory() { HostName = "localhost" };
-            this.connection = factory.CreateConnection();
-            this.channel = connection.CreateModel();
 
-
-        }
     }
     public static class ApplicationBuilderExtentions
     {
