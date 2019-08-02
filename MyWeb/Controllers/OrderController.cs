@@ -9,7 +9,7 @@ namespace MyWeb.Controllers
 {
     public class OrderController : Controller
     {
-        public IList<Food> Foods;
+        public IList<Food> Foods=new List<Food>();
 
         public OrderController()
         {
@@ -23,10 +23,14 @@ namespace MyWeb.Controllers
             Foods.Add(new Food { Id = 8, Name = "Pancakes", Price = 10 });
         }
 
-        public IActionResult Index(Order order)
+        [Route("api/order")]
+        [HttpPost]
+        public IActionResult Create(Order order)
         {
             var food = Foods.First(f => f.Id == order.FoodId);
             order.Amount = food.Price * order.Count;
+            order.TimeCreated = DateTime.Now;
+
             return Ok(order);
         }
     }

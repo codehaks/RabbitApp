@@ -9,7 +9,7 @@ namespace MyWeb.Controllers
 {
     public class FoodController : Controller
     {
-        public IList<Food> Foods;
+        public IList<Food> Foods=new List<Food>();
 
         public FoodController()
         {
