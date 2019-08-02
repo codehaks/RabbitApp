@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace MyWeb.Models
 {
+    [Serializable]
     public class Order
     {
         public int Id { get; set; }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyWeb.Models;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 
 namespace MyWeb.Controllers
 {
@@ -21,6 +24,10 @@ namespace MyWeb.Controllers
             Foods.Add(new Food { Id = 6, Name = "Chicken Nugets", Price = 12 });
             Foods.Add(new Food { Id = 7, Name = "Waffles", Price = 10 });
             Foods.Add(new Food { Id = 8, Name = "Pancakes", Price = 10 });
+
+
+           
+
         }
 
         [Route("api/order")]
@@ -30,6 +37,29 @@ namespace MyWeb.Controllers
             var food = Foods.First(f => f.Id == order.FoodId);
             order.Amount = food.Price * order.Count;
             order.TimeCreated = DateTime.Now;
+
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+                channel.QueueDeclare(queue: "orders",
+                                     durable: false,
+                                     exclusive: false,
+                                     autoDelete: false,
+                                     arguments: null);
+
+                string message = JsonConvert.SerializeObject(order);
+
+                var body = Encoding.UTF8.GetBytes(message);
+
+                channel.BasicPublish(exchange: "",
+                                     routingKey: "hello",
+                                     basicProperties: null,
+                                     body: body);
+
+                Console.WriteLine(" [x] Sent {0}", message);
+            }
 
             return Ok(order);
         }
