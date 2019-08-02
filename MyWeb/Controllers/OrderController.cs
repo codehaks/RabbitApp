@@ -43,8 +43,9 @@ namespace MyWeb.Controllers
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
+                channel.ExchangeDeclare("afra_direct_exchange", "direct");
                 channel.QueueDeclare(queue: "orders",
-                                     durable: false,
+                                     durable: true,
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
@@ -54,7 +55,7 @@ namespace MyWeb.Controllers
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: "",
-                                     routingKey: "hello",
+                                     routingKey: "orders",
                                      basicProperties: null,
                                      body: body);
 
