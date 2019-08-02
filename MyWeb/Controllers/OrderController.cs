@@ -43,9 +43,9 @@ namespace MyWeb.Controllers
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.ExchangeDeclare("afra_direct_exchange", "direct");
+                //channel.ExchangeDeclare("afra_direct_exchange", "direct");
                 channel.QueueDeclare(queue: "orders",
-                                     durable: true,
+                                     durable: false,
                                      exclusive: false,
                                      autoDelete: false,
                                      arguments: null);
