@@ -12,7 +12,7 @@ namespace MyWeb.Controllers
 {
     public class OrderController : Controller
     {
-        public IList<Food> Foods=new List<Food>();
+        public IList<Food> Foods = new List<Food>();
         private static int Number { get; set; }
         public OrderController()
         {
@@ -26,7 +26,7 @@ namespace MyWeb.Controllers
             Foods.Add(new Food { Id = 8, Name = "Pancakes", Price = 10 });
 
 
-           
+
 
         }
 
@@ -57,11 +57,12 @@ namespace MyWeb.Controllers
                 string message = JsonConvert.SerializeObject(order);
 
                 var body = Encoding.UTF8.GetBytes(message);
+                channel.ExchangeDeclare("Test", "direct");
 
                 channel.BasicPublish(exchange: "",
-                                     routingKey: "orders",
-                                     basicProperties: null,
-                                     body: body);
+                     routingKey: "orders",
+                     basicProperties: null,
+                     body: body);
 
                 Console.WriteLine(" [x] Sent {0}", message);
             }
