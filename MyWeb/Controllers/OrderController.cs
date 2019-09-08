@@ -13,7 +13,7 @@ namespace MyWeb.Controllers
     public class OrderController : Controller
     {
         public IList<Food> Foods=new List<Food>();
-
+        private static int Number { get; set; }
         public OrderController()
         {
             Foods.Add(new Food { Id = 1, Name = "Hamburgur", Price = 15 });
@@ -34,7 +34,11 @@ namespace MyWeb.Controllers
         [HttpPost]
         public IActionResult Create(Order order)
         {
+            Number += 1;
+
             var food = Foods.First(f => f.Id == order.FoodId);
+
+            order.Id = Number;
             order.Amount = food.Price * order.Count;
             order.TimeCreated = DateTime.Now;
 
