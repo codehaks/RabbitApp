@@ -24,10 +24,6 @@ namespace MyWeb.Controllers
             Foods.Add(new Food { Id = 6, Name = "Chicken Nugets", Price = 12 });
             Foods.Add(new Food { Id = 7, Name = "Waffles", Price = 10 });
             Foods.Add(new Food { Id = 8, Name = "Pancakes", Price = 10 });
-
-
-
-
         }
 
         [Route("api/order")]
@@ -42,9 +38,10 @@ namespace MyWeb.Controllers
             order.Amount = food.Price * order.Count;
             order.TimeCreated = DateTime.Now;
 
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = "localhost"};
 
             using (var connection = factory.CreateConnection())
+
             using (var channel = connection.CreateModel())
             {
                 //channel.ExchangeDeclare("afra_direct_exchange", "direct");
@@ -57,7 +54,7 @@ namespace MyWeb.Controllers
                 string message = JsonConvert.SerializeObject(order);
 
                 var body = Encoding.UTF8.GetBytes(message);
-                channel.ExchangeDeclare("Test", "direct");
+                //channel.ExchangeDeclare("Test", "direct");
 
                 channel.BasicPublish(exchange: "",
                      routingKey: "orders",
